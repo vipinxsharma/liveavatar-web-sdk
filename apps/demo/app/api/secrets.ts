@@ -14,4 +14,4 @@ export const LANGUAGE = "en";
 
 // LITE MODE Customizations
 export const ELEVENLABS_API_KEY = "cdbf1cbb6c7d8e42ef5f658d190b8307a0976d0c77c59306eadbac4c4276be75";
-export const OPENAI_API_KEY = "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";
+export const ANTHROPIC_API_KEY = "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";
