@@ -8,11 +8,11 @@ export type SessionMode = "FULL" | "FULL_PTT" | "LITE";
 
 export const LiveAvatarDemo = () => {
   const [sessionToken, setSessionToken] = useState("");
-  const [mode, setMode] = useState<SessionMode>("FULL");
+  const [mode, setMode] = useState<SessionMode>("LITE");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [manualToken, setManualToken] = useState("");
-  const [manualMode, setManualMode] = useState<SessionMode>("FULL");
+  const [manualMode, setManualMode] = useState<SessionMode>("LITE");
 
   const handleStartFullSession = async (pushToTalk: boolean = false) => {
     setLoading(true);
@@ -93,10 +93,10 @@ export const LiveAvatarDemo = () => {
         <div className="w-full max-w-lg flex flex-col items-center gap-6 p-8">
           <div className="text-center mb-2">
             <h1 className="text-2xl font-semibold text-white mb-1">
-              LiveAvatar Demo
+              AI Advisor Widget
             </h1>
             <p className="text-sm text-gray-400">
-              Choose a session mode to get started
+              Choose your interaction mode
             </p>
           </div>
 
@@ -108,31 +108,36 @@ export const LiveAvatarDemo = () => {
 
           <div className="w-full flex flex-col gap-3">
             <button
+              onClick={handleStartLiteSession}
+              disabled={loading}
+              className="w-full px-6 py-3 rounded-lg bg-blue-600 text-white font-medium text-base hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Starting..." : "Start AI Advisor"}
+            </button>
+
+            <div className="w-full border-t border-white/10 my-2"></div>
+
+            <p className="text-xs text-gray-500 text-center">Advanced Modes</p>
+
+            <button
               onClick={() => handleStartFullSession(false)}
               disabled={loading}
-              className="w-full px-6 py-2.5 rounded-lg bg-white/10 text-white font-medium text-base border border-white/20 hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-6 py-2.5 rounded-lg bg-white/10 text-white font-medium text-sm border border-white/20 hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Starting..." : "Full Mode"}
+              {loading ? "Starting..." : "Full Mode (Voice Chat)"}
             </button>
             <button
               onClick={() => handleStartFullSession(true)}
               disabled={loading}
-              className="w-full px-6 py-2.5 rounded-lg bg-white/10 text-white font-medium text-base border border-white/20 hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-6 py-2.5 rounded-lg bg-white/10 text-white font-medium text-sm border border-white/20 hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Starting..." : "Full Mode (Push to Talk)"}
-            </button>
-            <button
-              onClick={handleStartLiteSession}
-              disabled={loading}
-              className="w-full px-6 py-2.5 rounded-lg bg-white/10 text-white font-medium text-base border border-white/20 hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Starting..." : "Lite Mode"}
             </button>
           </div>
 
           <div className="w-full flex flex-col items-center gap-3 pt-6 border-t border-white/10">
             <span className="text-xs text-gray-500 uppercase tracking-wider">
-              Or use an existing token
+              Developer Mode
             </span>
             <input
               type="text"
@@ -146,15 +151,15 @@ export const LiveAvatarDemo = () => {
               onChange={(e) => setManualMode(e.target.value as SessionMode)}
               className="w-full px-4 py-2.5 rounded-lg bg-white/5 text-white text-sm border border-white/10 focus:outline-none focus:border-white/30 transition-colors"
             >
-              <option value="FULL">Full Mode</option>
+              <option value="LITE">AI Advisor Mode</option>
+              <option value="FULL">Full Mode (Voice)</option>
               <option value="FULL_PTT">Full Mode (Push To Talk)</option>
-              <option value="LITE">Lite Mode</option>
             </select>
             <button
               onClick={handleStartWithToken}
-              className="w-full px-6 py-2.5 rounded-lg bg-white/10 text-white font-medium text-base border border-white/20 hover:bg-white/20 transition-colors"
+              className="w-full px-6 py-2.5 rounded-lg bg-white/10 text-white font-medium text-sm border border-white/20 hover:bg-white/20 transition-colors"
             >
-              Connect
+              Connect with Token
             </button>
           </div>
         </div>

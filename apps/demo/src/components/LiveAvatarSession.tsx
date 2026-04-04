@@ -61,6 +61,7 @@ const LiveAvatarSessionComponent: React.FC<{
   onSessionStopped: () => void;
 }> = ({ mode, onSessionStopped }) => {
   const [message, setMessage] = useState("");
+  const [sttError, setSTTError] = useState<string | null>(null);
   const {
     sessionState,
     isStreamReady,
@@ -126,9 +127,40 @@ const LiveAvatarSessionComponent: React.FC<{
 
   useEffect(() => {
     if (sessionState === SessionState.INACTIVE) {
-      startSession();
+      startSession().catch((err) => {
+        console.error("Failed to start session:", err);
+        setSTTError("Failed to initialize session");
+      });
     }
   }, [startSession, sessionState]);
+
+  const handleSendMessage = async (msg: string) => {
+    const trimmed = msg.trim();
+    if (!trimmed) return;
+
+    setSTTError(null);
+    try {
+      await sendMessage(trimmed);
+      setMessage("");
+    } catch (err) {
+      console.error("Send message failed:", err);
+      setSTTError("Failed to send message");
+    }
+  };
+
+  const handleRepeat = async (msg: string) => {
+    const trimmed = msg.trim();
+    if (!trimmed) return;
+
+    setSTTError(null);
+    try {
+      await repeat(trimmed);
+      setMessage("");
+    } catch (err) {
+      console.error("Repeat failed:", err);
+      setSTTError("Failed to repeat message");
+    }
+  };
 
   const qualityColor =
     connectionQuality === "GOOD"
@@ -263,21 +295,17 @@ const LiveAvatarSessionComponent: React.FC<{
               />
               <div className="flex items-center gap-2">
                 <ActionButton
-                  onClick={() => {
-                    sendMessage(message);
-                    setMessage("");
-                  }}
+                  onClick={() => handleSendMessage(message)}
                   variant="primary"
                   size="sm"
+                  disabled={!message.trim()}
                 >
                   Send
                 </ActionButton>
                 <ActionButton
-                  onClick={() => {
-                    repeat(message);
-                    setMessage("");
-                  }}
+                  onClick={() => handleRepeat(message)}
                   size="sm"
+                  disabled={!message.trim()}
                 >
                   Repeat
                 </ActionButton>
@@ -289,9 +317,9 @@ const LiveAvatarSessionComponent: React.FC<{
 
       {/* Controls */}
       <div className="w-full flex flex-col items-center gap-3">
-        {voiceChatError && (
+        {(voiceChatError || sttError) && (
           <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-lg">
-            {voiceChatError}
+            {voiceChatError || sttError}
           </p>
         )}
 
@@ -372,29 +400,24 @@ const LiveAvatarSessionComponent: React.FC<{
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && message.trim()) {
-                  sendMessage(message);
-                  setMessage("");
+                  handleSendMessage(message);
                 }
               }}
-              placeholder="Type a message..."
+              placeholder="Ask your AI advisor..."
               className="w-[350px] px-4 py-2 rounded-lg bg-white/5 text-white text-sm border border-white/10 focus:outline-none focus:border-white/30 placeholder-gray-500 transition-colors"
             />
             <ActionButton
-              onClick={() => {
-                sendMessage(message);
-                setMessage("");
-              }}
+              onClick={() => handleSendMessage(message)}
               variant="primary"
               size="sm"
+              disabled={!message.trim()}
             >
               Send
             </ActionButton>
             <ActionButton
-              onClick={() => {
-                repeat(message);
-                setMessage("");
-              }}
+              onClick={() => handleRepeat(message)}
               size="sm"
+              disabled={!message.trim()}
             >
               Repeat
             </ActionButton>
